@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		6A719B5C1A5A12BC0A7743FA /* Pods_MovieViewer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F800AADA2431DF3E5473296 /* Pods_MovieViewer.framework */; };
+		A1C7833D1E1D69D600F9310E /* PosterCVCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C7833C1E1D69D600F9310E /* PosterCVCell.swift */; };
 		A1CEBBEA1E185D090043821A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1CEBBE91E185D090043821A /* AppDelegate.swift */; };
 		A1CEBBEF1E185D090043821A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A1CEBBED1E185D090043821A /* Main.storyboard */; };
 		A1CEBBF11E185D090043821A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1CEBBF01E185D090043821A /* Assets.xcassets */; };
@@ -20,6 +21,7 @@
 		2F800AADA2431DF3E5473296 /* Pods_MovieViewer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MovieViewer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		382BE7E54DA25FAC5147F1DF /* Pods-MovieViewer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MovieViewer.release.xcconfig"; path = "Pods/Target Support Files/Pods-MovieViewer/Pods-MovieViewer.release.xcconfig"; sourceTree = "<group>"; };
 		3DC306512F5AC2D16B14BEB3 /* Pods-MovieViewer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MovieViewer.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MovieViewer/Pods-MovieViewer.debug.xcconfig"; sourceTree = "<group>"; };
+		A1C7833C1E1D69D600F9310E /* PosterCVCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PosterCVCell.swift; sourceTree = "<group>"; };
 		A1CEBBE61E185D090043821A /* MovieViewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MovieViewer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1CEBBE91E185D090043821A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A1CEBBEE1E185D090043821A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -87,6 +89,7 @@
 			isa = PBXGroup;
 			children = (
 				A1CEBBFE1E1865830043821A /* MovieCell.swift */,
+				A1C7833C1E1D69D600F9310E /* PosterCVCell.swift */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -142,6 +145,7 @@
 				TargetAttributes = {
 					A1CEBBE51E185D080043821A = {
 						CreatedOnToolsVersion = 8.1;
+						DevelopmentTeam = TRQ9HDB883;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -233,6 +237,7 @@
 				A1CEBBEA1E185D090043821A /* AppDelegate.swift in Sources */,
 				A1CEBBFC1E185D820043821A /* MoviesViewController.swift in Sources */,
 				A1CEBBFF1E1865830043821A /* MovieCell.swift in Sources */,
+				A1C7833D1E1D69D600F9310E /* PosterCVCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -354,6 +359,7 @@
 			baseConfigurationReference = 3DC306512F5AC2D16B14BEB3 /* Pods-MovieViewer.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = TRQ9HDB883;
 				INFOPLIST_FILE = MovieViewer/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.eric.MovieViewer;
@@ -367,6 +373,7 @@
 			baseConfigurationReference = 382BE7E54DA25FAC5147F1DF /* Pods-MovieViewer.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = TRQ9HDB883;
 				INFOPLIST_FILE = MovieViewer/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.eric.MovieViewer;
@@ -394,6 +401,7 @@
 				A1CEBBFA1E185D090043821A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

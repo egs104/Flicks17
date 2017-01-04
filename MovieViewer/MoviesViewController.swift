@@ -10,11 +10,13 @@ import UIKit
 import AFNetworking
 import MBProgressHUD
 
-class MoviesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class MoviesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate {
 
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var searchBar: UISearchBar!
     
     var movies: [NSDictionary]?
+    var filteredData: [NSDictionary]?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,6 +26,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
 
         tableView.dataSource = self
         tableView.delegate = self
+        searchBar.delegate = self
         tableView.insertSubview(refreshControl, at: 0)
         
         let apiKey = "a07e22bc18f5cb106bfe4cc1f83ad8ed"
@@ -72,14 +75,41 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         let title = movie?["title"] as! String
         let overview = movie?["overview"] as! String
         let posterPath = movie?["poster_path"] as! String
+        let rating = movie?["vote_average"] as! Int
+        let releaseDate = movie?["release_date"] as! String
         
         let baseUrl = "https://image.tmdb.org/t/p/w500"
         
         let imageUrl = NSURL(string: baseUrl + posterPath)
         
+        let imageRequest = NSURLRequest(url: imageUrl as! URL)
+        
+        cell.posterImageView.setImageWith(
+            imageRequest as URLRequest,
+            placeholderImage: nil,
+            success: { (imageRequest, imageResponse, image) -> Void in
+                
+                // imageResponse will be nil if the image is cached
+                if imageResponse != nil {
+                    print("Image was NOT cached, fade in image")
+                    cell.posterImageView.alpha = 0.0
+                    cell.posterImageView.image = image
+                    UIView.animate(withDuration: 0.3, animations: { () -> Void in
+                        cell.posterImageView.alpha = 1.0
+                    })
+                } else {
+                    cell.posterImageView.image = image
+                }
+        },
+            failure: { (imageRequest, imageResponse, error) -> Void in
+                // do something for the failure condition
+        })
+        
         cell.titleLabel.text = title
         cell.overviewLabel.text = overview
-        cell.posterImageView.setImageWith(imageUrl as! URL)
+        //cell.posterImageView.setImageWith(imageUrl as! URL)
+        cell.ratingLabel.text = "\(rating)"
+        cell.releaseLabel.text = releaseDate
         
         return cell
     }
@@ -111,6 +141,31 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         task.resume()
     }
     
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        
+        tableView.reloadData()
+    }
+    
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
+        searchBar.showsCancelButton = false
+    }
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
+    }
+    
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        searchBar.showsCancelButton = true
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        // Stop doing the search stuff
+        // and clear the text in the search bar
+        searchBar.text = ""
+        
+        searchBar.resignFirstResponder()
+    }
 
     /*
     // MARK: - Navigation
