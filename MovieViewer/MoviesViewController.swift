@@ -95,15 +95,15 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
             movie = movies?[indexPath.row]
         }
         
-        let title = movie?["title"] as? String
-        let overview = movie?["overview"] as? String
-        let posterPath = movie?["poster_path"] as? String
-        let rating = movie?["vote_average"] as? Int
-        let releaseDate = movie?["release_date"] as? String
+        let title = movie?["title"] as! String
+        let overview = movie?["overview"] as! String
+        let posterPath = movie?["poster_path"] as! String
+        let rating = movie?["vote_average"] as! Int
+        let releaseDate = movie?["release_date"] as! String
         
         let baseUrl = "https://image.tmdb.org/t/p/w500"
         
-        let imageUrl = NSURL(string: baseUrl + posterPath!)
+        let imageUrl = NSURL(string: baseUrl + posterPath)
         
         let imageRequest = NSURLRequest(url: imageUrl as! URL)
         
