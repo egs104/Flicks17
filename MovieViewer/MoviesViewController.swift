@@ -10,10 +10,11 @@ import UIKit
 import AFNetworking
 import MBProgressHUD
 
-class MoviesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate {
+class MoviesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchResultsUpdating {
 
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var searchBar: UISearchBar!
+    
+    var searchController: UISearchController!
     
     var movies: [NSDictionary]?
     var filteredData: [NSDictionary]?
@@ -26,8 +27,17 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
 
         tableView.dataSource = self
         tableView.delegate = self
-        searchBar.delegate = self
         tableView.insertSubview(refreshControl, at: 0)
+        tableView.backgroundColor = UIColor.darkGray
+        
+        searchController = UISearchController(searchResultsController: nil)
+        searchController.searchResultsUpdater = self
+        searchController.searchBar.sizeToFit()
+        searchController.searchBar.barTintColor = UIColor.darkGray
+        tableView.tableHeaderView = searchController.searchBar
+        searchController.dimsBackgroundDuringPresentation = false
+        
+        definesPresentationContext = true
         
         let apiKey = "a07e22bc18f5cb106bfe4cc1f83ad8ed"
         let url = URL(string: "https://api.themoviedb.org/3/movie/now_playing?api_key=\(apiKey)")
@@ -44,7 +54,8 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
                 if let responseDictionary = try! JSONSerialization.jsonObject(with: data, options:[]) as? NSDictionary {
                     print("response: \(responseDictionary)")
                     
-                    self.movies = responseDictionary["results"] as! [NSDictionary]
+                    self.movies = responseDictionary["results"] as? [NSDictionary]
+                    self.filteredData = self.movies
                     self.tableView.reloadData()
                     MBProgressHUD.hide(for: self.view, animated: true)
                 }
@@ -61,7 +72,11 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         if let movies = movies {
-            return movies.count
+            if searchController.isActive && searchController.searchBar.text != "" {
+                return filteredData!.count
+            } else {
+                return movies.count
+            }
         } else {
             return 0
         }
@@ -71,16 +86,24 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "MovieCell", for: indexPath) as! MovieCell
         
-        let movie = movies?[indexPath.row]
-        let title = movie?["title"] as! String
-        let overview = movie?["overview"] as! String
-        let posterPath = movie?["poster_path"] as! String
-        let rating = movie?["vote_average"] as! Int
-        let releaseDate = movie?["release_date"] as! String
+        var movie: NSDictionary?
+        
+        if searchController.isActive && searchController.searchBar.text != "" {
+            movie = filteredData?[indexPath.row]
+            
+        } else {
+            movie = movies?[indexPath.row]
+        }
+        
+        let title = movie?["title"] as? String
+        let overview = movie?["overview"] as? String
+        let posterPath = movie?["poster_path"] as? String
+        let rating = movie?["vote_average"] as? Int
+        let releaseDate = movie?["release_date"] as? String
         
         let baseUrl = "https://image.tmdb.org/t/p/w500"
         
-        let imageUrl = NSURL(string: baseUrl + posterPath)
+        let imageUrl = NSURL(string: baseUrl + posterPath!)
         
         let imageRequest = NSURLRequest(url: imageUrl as! URL)
         
@@ -131,7 +154,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
                 if let responseDictionary = try! JSONSerialization.jsonObject(with: data, options:[]) as? NSDictionary {
                     print("response: \(responseDictionary)")
                     
-                    self.movies = responseDictionary["results"] as! [NSDictionary]
+                    self.movies = responseDictionary["results"] as? [NSDictionary]
                     self.tableView.reloadData()
                     refreshControl.endRefreshing()
                     //MBProgressHUD.hide(for: self.view, animated: true)
@@ -141,32 +164,26 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         task.resume()
     }
     
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+    func filterContentForSearchText(searchText: String, scope: String = "All") {
+        if filteredData?.count != 0 {
+            filteredData?.removeAll()
+        }
+        
+        for movie in movies! {
+            var title = movie["title"] as? String
+            
+            if (title?.lowercased().contains(searchText.lowercased()))! {
+                filteredData?.append(movie)
+            }
+        }
         
         tableView.reloadData()
     }
     
-    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        searchBar.resignFirstResponder()
-        searchBar.showsCancelButton = false
+    func updateSearchResults(for searchController: UISearchController) {
+        filterContentForSearchText(searchText: searchController.searchBar.text!)
     }
     
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        searchBar.resignFirstResponder()
-    }
-    
-    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        searchBar.showsCancelButton = true
-    }
-    
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        // Stop doing the search stuff
-        // and clear the text in the search bar
-        searchBar.text = ""
-        
-        searchBar.resignFirstResponder()
-    }
-
     /*
     // MARK: - Navigation
 
