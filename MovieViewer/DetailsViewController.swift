@@ -13,11 +13,15 @@ class DetailsViewController: UIViewController {
     @IBOutlet weak var posterImageView: UIImageView!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var overviewLabel: UILabel!
+    @IBOutlet weak var scrollView: UIScrollView!
+    @IBOutlet weak var infoView: UIView!
     
     var movie: NSDictionary!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        scrollView.contentSize = CGSize(width: scrollView.frame.size.width, height: infoView.frame.origin.y + infoView.frame.size.height)
 
         print(movie)
         let title = movie["title"] as? String
@@ -25,35 +29,57 @@ class DetailsViewController: UIViewController {
         
         let overview = movie["overview"] as? String
         overviewLabel.text = overview
+        overviewLabel.sizeToFit()
         
-        let baseUrl = "https://image.tmdb.org/t/p/w500"
+        let lowBaseUrl = "https://image.tmdb.org/t/p/w45"
+        let highBaseUrl = "https://image.tmdb.org/t/p/original"
         
         if let posterPath = movie?["poster_path"] as? String {
-            let posterUrl = NSURL(string: baseUrl + posterPath)
-            posterImageView.setImageWith(posterUrl! as URL)
-        }
-        
-//        cell.posterImageView.setImageWith(
-//            imageRequest as URLRequest,
-//            placeholderImage: nil,
-//            success: { (imageRequest, imageResponse, image) -> Void in
-//                
-//                // imageResponse will be nil if the image is cached
-//                if imageResponse != nil {
-//                    print("Image was NOT cached, fade in image")
-//                    cell.posterImageView.alpha = 0.0
-//                    cell.posterImageView.image = image
-//                    UIView.animate(withDuration: 0.3, animations: { () -> Void in
-//                        cell.posterImageView.alpha = 1.0
-//                    })
-//                } else {
-//                    cell.posterImageView.image = image
-//                }
-//        },
-//            failure: { (imageRequest, imageResponse, error) -> Void in
-//                // do something for the failure condition
-//        })
+            let lowPosterUrl = NSURL(string: lowBaseUrl + posterPath)
+            let highPosterUrl = NSURL(string: highBaseUrl + posterPath)
+            
+            let smallImageRequest = NSURLRequest(url: lowPosterUrl as! URL)
+            let largeImageRequest = NSURLRequest(url: highPosterUrl as! URL)
+            
+            self.posterImageView.setImageWith(
+                smallImageRequest as URLRequest,
+                placeholderImage: nil,
+                success: { (smallImageRequest, smallImageResponse, smallImage) -> Void in
+                    
+                    // smallImageResponse will be nil if the smallImage is already available
+                    // in cache (might want to do something smarter in that case).
+                    self.posterImageView.alpha = 0.0
+                    self.posterImageView.image = smallImage;
+                    
+                    UIView.animate(withDuration: 0.3, animations: { () -> Void in
+                        
+                        self.posterImageView.alpha = 1.0
+                        
+                    }, completion: { (sucess) -> Void in
+                        
+                        // The AFNetworking ImageView Category only allows one request to be sent at a time
+                        // per ImageView. This code must be in the completion block.
+                        self.posterImageView.setImageWith(
+                            largeImageRequest as URLRequest,
+                            placeholderImage: smallImage,
+                            success: { (largeImageRequest, largeImageResponse, largeImage) -> Void in
+                                
+                                self.posterImageView.image = largeImage;
+                                
+                        },
+                            failure: { (request, response, error) -> Void in
+                                // do something for the failure condition of the large image request
+                                // possibly setting the ImageView's image to a default image
+                        })
+                    })
+            },
+                failure: { (request, response, error) -> Void in
+                    // do something for the failure condition
+                    // possibly try to get the large image
+            })
 
+
+        }
         
     }
 
